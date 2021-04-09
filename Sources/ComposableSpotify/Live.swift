@@ -23,7 +23,7 @@ public extension SpotifyManager {
         var manager = SpotifyManager()
 
         manager.connectionStatus = { id in
-            return dependencies[id]?.connectionStatus ?? .disconnected
+            return dependencies[id]?.connectionStatus ?? .unknown
         }
         
         manager.create = { id, configuration, accessToken in
@@ -34,7 +34,9 @@ public extension SpotifyManager {
                 appRemote.delegate = delegate
                 appRemote.connect()
 
-                dependencies[id] = Dependencies(appRemote: appRemote,
+                dependencies[id] = Dependencies(
+                    connectionStatus: ConnectionStatus(rawValue: UserDefaults.standard.integer(forKey: "\(SpotifyManager.self)_status_key")) ?? .unknown,
+                    appRemote: appRemote,
                                                 delegate: delegate,
                                                 subscriber: subscriber)
                 return AnyCancellable {
@@ -45,6 +47,8 @@ public extension SpotifyManager {
 
         manager.destroy = { id in
             .fireAndForget {
+                let statusKey = dependencies[id]?.connectionStatus ?? .unknown
+                UserDefaults.standard.set(statusKey.rawValue, forKey: "\(SpotifyManager.self)_status_key")
                 dependencies[id]?.appRemote.disconnect()
                 dependencies[id] = nil
             }
@@ -55,6 +59,7 @@ public extension SpotifyManager {
                 let parameters = dependencies[id]?.appRemote.authorizationParameters(from: url)
 
                 if let accessToken = parameters?[SPTAppRemoteAccessTokenKey] {
+                    dependencies[id]?.connectionStatus = .connected
                     dependencies[id]?.appRemote.connectionParameters.accessToken = accessToken
                     dependencies[id]?.subscriber.send(.authorizationResult(.success(accessToken)))
                 } else if let errorDescription = parameters?[SPTAppRemoteErrorDescriptionKey] {
@@ -157,7 +162,7 @@ public extension SpotifyManager {
 }
 
 private struct Dependencies {
-    var connectionStatus: ConnectionStatus = .disconnected
+    var connectionStatus: ConnectionStatus
     var appRemote: SPTAppRemote
     let delegate: SpotifyManagerDelegate
     let subscriber: Effect<SpotifyManager.Action, Never>.Subscriber
