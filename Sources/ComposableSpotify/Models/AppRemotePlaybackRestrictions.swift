@@ -8,10 +8,10 @@
 import Foundation
 
 public struct AppRemotePlaybackRestrictions: Equatable {
-    var canSkipNext: Bool
-    var canSkipPrevious: Bool
-    var canRepeatTrack: Bool
-    var canRepeatContext: Bool
-    var canToggleShuffle: Bool
-    var canSeek: Bool
+    public var canSkipNext: Bool
+    public var canSkipPrevious: Bool
+    public var canRepeatTrack: Bool
+    public var canRepeatContext: Bool
+    public var canToggleShuffle: Bool
+    public var canSeek: Bool
 }

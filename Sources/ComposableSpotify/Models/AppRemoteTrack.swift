@@ -9,7 +9,7 @@ import Foundation
 import SpotifyiOS
 
 public struct AppRemoteTrack: Equatable {
-    let remoteTrack: SPTAppRemoteTrack?
+    public let remoteTrack: SPTAppRemoteTrack?
 
     public init(_ remoteTrack: SPTAppRemoteTrack?) {
         self.remoteTrack = remoteTrack as SPTAppRemoteTrack?

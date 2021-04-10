@@ -8,8 +8,8 @@
 import Foundation
 
 public struct SpotifyPlayerState: Equatable {
-    var track: AppRemoteTrack
-    var isPaused: Bool
-    var playerRestrictions: AppRemotePlaybackRestrictions
-    var contextURI: URL
+    public var track: AppRemoteTrack
+    public var isPaused: Bool
+    public var playerRestrictions: AppRemotePlaybackRestrictions
+    public var contextURI: URL
 }
